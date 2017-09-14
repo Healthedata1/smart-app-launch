@@ -254,7 +254,7 @@ that might occur from the immediate use of these values in the client app UI.
 ## Scopes for requesting identity data
 
 Some apps need to authenticate the clinical end-user. This can be accomplished
-by requesting a pair of OpenID Connect scopes: `openid` and  `profile`.
+by requesting a pair of OpenID Connect scopes: `openid` and  `fhirUser`.
 
 When these scopes are requested (and the request is granted), the app will
 receive an [`id_token`](http://openid.net/specs/openid-connect-core-1_0.html#CodeIDToken)
@@ -263,7 +263,26 @@ that comes alongside the access token.
 This token must be [validated according to the OIDC specification](http://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation).
 To learn more about the user, the app should treat the "profile" claim as the URL of
 a FHIR resource representing the current user. This will be a resource of type
-`Patient`, `Practitioner`, or `RelatedPerson`.
+`Patient`, `Practitioner`, `RelatedPerson`, or (if none of the above can adequately
+express the identity of the launching user) `Person`.
+
+The [OpenID Connect Core specification](http://openid.net/specs/openid-connect-core-1_0.html)
+describes a wide surface area with many optional capabilities. To be considered compatible
+with the SMART's `sso-openid-connect` capability, the following requirements apply:
+
+ * Response types: The EHR MUST support the Authorization Code Flow, with the request parameters [as defined in SMART's authorization guide](../). Support is not required for parameters that OIDC lists as optional (e.g. `id_token_hint`, `acr_value`), but EHRs are encouraged to review these optional parameters.
+ 
+ * Public Keys Published as Bare Keys: The EHR MUST publish public keys as base JWK keys (which MAY also be accompanied by X.509 representations of those keys).
+
+ * Claims: The EHR MUST support the inclusion of SMART's `fhirUser` claim within the `id_token` issued for any requests that grant the `openid` and `profile` scopes.
+ 
+ * Mandatory to Implement: The EHR MUST support all [features listed as "Mandatory to Implement" by section 15.1 of the OIDC Core 1.0 Specification](http://openid.net/specs/openid-connect-core-1_0.html#ServerMTI). This includes support for the requests specifying a Maximum Authentication Age via the `max_age` parameters.
+
+Note that support for the following features is optional:
+
+ * `claims` parameters on the authorization request
+ * Request Objects on the authorization request
+ * UserInfo endpoint with claims exposed to clients
 
 ## Scopes for requesting a refresh token
 
