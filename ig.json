@@ -32,8 +32,7 @@
       "base": "StructureDefinition-capabilitystatement-smartlaunch.html"
     },
     "StructureDefinition/extension-oauth-uris": {
-      "base": "StructureDefinition-extension-oauth-uris.html",
-      "inline": "StructureDefinition-extension-oauth-uris-inline.html"
+      "base": "StructureDefinition-extension-oauth-uris.html"
     }
   },
   "source": "ig.xml",
